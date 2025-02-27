@@ -10,11 +10,11 @@ import uploadImage from '../utils/uploadImage';
 
 const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) => {
 
-    const [visitedDate, setVisitedDate] = useState(null);
-    const [title, setTitle] = useState('');
-    const [storyImg, setStoryImg] = useState(null);
-    const [story, setStory] = useState("");
-    const [visitedLocation, setVisitedLocation] = useState([]);
+    const [visitedDate, setVisitedDate] = useState(storyInfo?.visitedDate || null);
+    const [title, setTitle] = useState(storyInfo?.title || '');
+    const [storyImg, setStoryImg] = useState(storyInfo?.imageUrl || null);
+    const [story, setStory] = useState(storyInfo?.story || "");
+    const [visitedLocation, setVisitedLocation] = useState(storyInfo?.visitedLocation || []);
     const [error, setError] = useState('')
 
     const addNewTravelStory = async () => {
@@ -37,12 +37,51 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                 onClose();
             }
         } catch (error) {
-            console.error(error);
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError("An unauthorized error occurred. Please try again. ")
+            }
         }
     }
-    const updateTravelStory = () => {
 
+    const updateTravelStory = async () => {
+        const storyId = storyInfo._id;
+        try {
+            let imageUrl = "";
+            let post = {
+                title,
+                story,
+                imageUrl: storyInfo.imageUrl || "",
+                visitedLocation,
+                visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
+            }
+            if (typeof storyImg === "object") {
+                const imgUploadRes = await uploadImage(storyImg);
+                imageUrl = imgUploadRes.imageUrl || "";
+
+                post = {
+                    ...post,
+                    imageUrl: imageUrl
+                }
+            }
+
+            const response = await axiosInstance.put("/edit-story/" + storyId, post);
+
+            if (response.data && response.data.story) {
+                toast.success("story edited successfully");
+                getAllTravelStories();
+                onClose();
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError("An unauthorized error occurred. Please try again. ")
+            }
+        }
     }
+
     const handleAddOrUpdateClick = () => {
         if (!title) {
             setError("please enter the title");
@@ -60,11 +99,13 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
             addNewTravelStory();
         }
     };
+
+
     const handleDeleteStoryImg = () => { };
 
 
     return (
-        <div>
+        <div className='relative'>
             <div className='flex items-center justify-between'>
                 <h5 className='text-xl font-medium text-slate-700'>
                     {type === 'add' ? "Add Story" : " Update Story"}
@@ -74,7 +115,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                         {type === 'add' ?
                             <button
                                 className='btn-small '
-                                onClick={() => { }}>
+                                onClick={handleAddOrUpdateClick}>
                                 <MdAdd className='text-lg' /> ADD STORY
                             </button> :
                             <>
@@ -108,9 +149,9 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                     <label
                         className='input-label'>TITLE</label>
                     <input
-                        className='text-xl text-slate-950 outline-none'
+                        className={`text-xl text-slate-950 outline-none ${error && "border border-red-500"}`}
                         type="text"
-                        placeholder='A Day at the Great wall.'
+                        placeholder='A Day at the Great Wall.'
                         value={title}
                         onChange={({ target }) => setTitle(target.value)}
                     />

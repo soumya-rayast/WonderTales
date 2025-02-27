@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { MdAdd } from "react-icons/md";
 import Modal from 'react-modal';
 import AddEditTravelStory from '../../components/AddEditTravelStory';
+import ViewTravelStroy from '../../components/ViewTravelStroy';
 
 Modal.setAppElement("#root");
 
@@ -20,7 +21,11 @@ const Home = () => {
     type: 'add',
     data: null
   });
-
+  const [openViewModal, setOpenViewModal] = useState({
+    isShown: false,
+    type: 'add',
+    data: null
+  });
   // Function to fetch user info
   const getUserInfo = useCallback(async () => {
     try {
@@ -37,7 +42,7 @@ const Home = () => {
   }, [navigate]);
 
   // Function to fetch all travel stories
-  const getAllTravelStories = useCallback(async () => {
+  const getAllTravelStories = async () => {
     try {
       const { data } = await axiosInstance.get("/get-all-stories");
       if (data?.stories) {
@@ -46,7 +51,7 @@ const Home = () => {
     } catch (error) {
       console.error("An unexpected error occurred. Please try again.");
     }
-  }, []);
+  };
 
   // Function to update favourite status
   const updateIsFavourite = async (storyData) => {
@@ -68,6 +73,12 @@ const Home = () => {
     setOpenAddEditModal({ isShown: false, type: "add", data: null });
   };
 
+  const handleViewStory = (data) => {
+    setOpenViewModal({ isShown: true, data })
+  }
+  const handleDelete = (data) => {
+    setOpenAddEditModal({ isShown: true, type: "edit", data:data })
+  }
   useEffect(() => {
     getUserInfo();
     getAllTravelStories();
@@ -81,13 +92,17 @@ const Home = () => {
           <div className='flex-1'>
             {allStories.length > 0 ? (
               <div className='grid grid-cols-2 gap-4'>
-                {allStories.map((story) => (
+                {allStories.map((item) => (
                   <TravelStoryCard
-                    key={story._id}
-                    {...story}
-                    onEdit={() => setOpenAddEditModal({ isShown: true, type: "edit", data: story })}
-                    onClick={() => console.log("View Story:", story)}
-                    onFavouriteClick={() => updateIsFavourite(story)}
+                    key={item._id}
+                    imgUrl={item.imageUrl}
+                    title={item.title}
+                    story={item.story}
+                    date={item.visitedDate}
+                    visitedLocation={item.visitedLocation}
+                    onEdit={() => setOpenAddEditModal({ isShown: true, type: "edit", data: item })}
+                    onClick={() => handleViewStory(item)}
+                    onFavouriteClick={() => updateIsFavourite(item)}
                   />
                 ))}
               </div>
@@ -116,6 +131,29 @@ const Home = () => {
           storyInfo={openAddEditModal.data}
           getAllTravelStories={getAllTravelStories}
           onClose={handleCloseModal}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={openViewModal.isShown}
+        onRequestClose={() => { }}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            zIndex: 999,
+          }
+        }}
+        appElement={document.getElementById("root")}
+        className="model-box"
+      >
+        <ViewTravelStroy
+          storyInfo={openViewModal.data || null}
+          onClose={() => setOpenViewModal((prevState) => ({ ...prevState, isShown: false }))}
+          onEditClick={() => {
+            setOpenViewModal((prevState) => ({ ...prevState, isShown: false })),
+              handleDelete(openViewModal.data || null)
+          }}
+          onDeleteClick={ }
         />
       </Modal>
 
