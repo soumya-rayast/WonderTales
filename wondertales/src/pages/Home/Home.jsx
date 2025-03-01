@@ -9,6 +9,7 @@ import { MdAdd } from "react-icons/md";
 import Modal from 'react-modal';
 import AddEditTravelStory from '../../components/AddEditTravelStory';
 import ViewTravelStroy from '../../components/ViewTravelStroy';
+import EmptyCard from '../../components/EmptyCard';
 
 Modal.setAppElement("#root");
 
@@ -77,7 +78,22 @@ const Home = () => {
     setOpenViewModal({ isShown: true, data })
   }
   const handleDelete = (data) => {
-    setOpenAddEditModal({ isShown: true, type: "edit", data:data })
+    setOpenAddEditModal({ isShown: true, type: "edit", data: data })
+  }
+
+  const deleteTravelStory = async (data) => {
+    const storyId = data._id;
+
+    try {
+      const response = await axiosInstance.delete("/delete-story" + storyId);
+      if (response.data && !response.data.error) {
+        toast.error("Story Deleted Successfully");
+        setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
+        getAllTravelStories();
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred. Please try again.", error);
+    }
   }
   useEffect(() => {
     getUserInfo();
@@ -107,7 +123,7 @@ const Home = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500">No stories available.</p>
+              <EmptyCard message={`Start creating your story. Click Add icon to add `}/>
             )}
           </div>
           <div className='w-[320px]'></div>
@@ -153,7 +169,9 @@ const Home = () => {
             setOpenViewModal((prevState) => ({ ...prevState, isShown: false })),
               handleDelete(openViewModal.data || null)
           }}
-          onDeleteClick={ }
+          onDeleteClick={() => {
+            deleteTravelStory(openViewModal.data || null)
+          }}
         />
       </Modal>
 

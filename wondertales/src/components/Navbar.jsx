@@ -1,8 +1,9 @@
 import React from 'react'
 import ProfileInfo from './ProfileInfo'
 import { useNavigate } from 'react-router-dom'
+import SearchBar from './SearchBar'
 
-const Navbar = ({ userInfo }) => {
+const Navbar = ({ userInfo, searchQuery, setSearchQuery }) => {
     const isToken = localStorage.getItem('token')
     const navigate = useNavigate();
 
@@ -10,10 +11,19 @@ const Navbar = ({ userInfo }) => {
         localStorage.clear();
         navigate("/login")
     }
+    const handleSearch = () => { }
+    const onClearSearch = () => { }
     return (
         <div className='bg-white flex items-center justify-between px-6 py-2 drop-shadow sticky top-0 z-10'>
             {/* logo */}
-            <img src="" alt="" />
+            <img src="" alt="" className='h-9' />
+            <SearchBar
+                value={searchQuery}
+                onChange={({ target }) => setSearchQuery(target.value)}
+                handleSearch={handleSearch}
+                onClearSearch={onClearSearch}
+            />
+
             {isToken && <ProfileInfo userInfo={userInfo} onLogOut={onLogOut} />}
         </div>
     )
