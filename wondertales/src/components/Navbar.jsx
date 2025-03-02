@@ -3,7 +3,7 @@ import ProfileInfo from './ProfileInfo'
 import { useNavigate } from 'react-router-dom'
 import SearchBar from './SearchBar'
 
-const Navbar = ({ userInfo, searchQuery, setSearchQuery }) => {
+const Navbar = ({ userInfo, searchQuery, setSearchQuery, onSearchNote, handleClearSearch }) => {
     const isToken = localStorage.getItem('token')
     const navigate = useNavigate();
 
@@ -11,8 +11,15 @@ const Navbar = ({ userInfo, searchQuery, setSearchQuery }) => {
         localStorage.clear();
         navigate("/login")
     }
-    const handleSearch = () => { }
-    const onClearSearch = () => { }
+    const handleSearch = () => {
+        if (searchQuery) {
+            onSearchNote(searchQuery);
+        }
+    }
+    const onClearSearch = () => {
+        handleClearSearch();
+        setSearchQuery('')
+    }
     return (
         <div className='bg-white flex items-center justify-between px-6 py-2 drop-shadow sticky top-0 z-10'>
             {/* logo */}
