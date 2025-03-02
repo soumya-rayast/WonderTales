@@ -14,4 +14,15 @@ export const getInitials = (name) => {
     }
 
     return initials.toUpperCase();
-} 
+}
+
+export const getEmptyCardMessage = (filterType) => {
+    switch (filterType) {
+        case 'search':
+            return 'Oops No stories found matching your search.';
+        case 'date':
+            return "No stories found in the given date range";
+        default:
+            return "Start Creating your first Travel Story! ";
+    }
+}

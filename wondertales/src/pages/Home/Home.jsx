@@ -12,6 +12,8 @@ import ViewTravelStroy from '../../components/ViewTravelStroy';
 import EmptyCard from '../../components/EmptyCard';
 import { DayPicker } from 'react-day-picker';
 import moment from 'moment';
+import FilterInfoTitle from '../../components/FilterInfoTitle';
+import { getEmptyCardMessage } from '../../utils/helper';
 
 Modal.setAppElement("#root");
 
@@ -65,16 +67,22 @@ const Home = () => {
   // Function to update favourite status
   const updateIsFavourite = async (storyData) => {
     try {
-      const { data } = await axiosInstance.put(`/update-is-favourite/${storyData._id}`, {
+      const response = await axiosInstance.put(`/update-is-favourite/${storyData._id}`, {
         isFavourite: !storyData.isFavourite
       });
 
-      if (data?.story) {
+      if (response.data && response.data.story) {
         toast.success("Story updated successfully");
-        getAllTravelStories();
+        if (filterType === 'search' && searchQuery) {
+          onSearchStory(searchQuery);
+        } else if (filterType === 'date') {
+          filterTravelStoriesByDate(dateRange);
+        } else {
+          getAllTravelStories();
+        }
       }
     } catch (error) {
-      console.error("An unexpected error occurred. Please try again.");
+      console.error("An unexpected error occurred. Please try again.", error);
     }
   };
 
@@ -149,6 +157,11 @@ const Home = () => {
     setDateRange(day);
     filterTravelStoriesByDate(day);
   }
+  const resetFilter = () => {
+    setDateRange({ from: null, to: null });
+    setFilterType('');
+    getAllTravelStories();
+  }
   useEffect(() => {
     getUserInfo();
     getAllTravelStories();
@@ -165,7 +178,13 @@ const Home = () => {
       />
       <div className='container mx-auto py-10'>
 
-        
+        <FilterInfoTitle
+          filterType={filterType}
+          filterDates={dateRange}
+          onClear={() => {
+            resetFilter()
+          }}
+        />
         <div className='flex gap-7'>
           <div className='flex-1'>
             {allStories.length > 0 ? (
@@ -185,7 +204,9 @@ const Home = () => {
                 ))}
               </div>
             ) : (
-              <EmptyCard message={`Start creating your story. Click Add icon to add `} />
+              <EmptyCard
+                message={getEmptyCardMessage(filterType)}
+              />
             )}
           </div>
           <div className='w-[320px]'>
