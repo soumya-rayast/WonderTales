@@ -10,6 +10,7 @@ import Modal from 'react-modal';
 import AddEditTravelStory from '../../components/AddEditTravelStory';
 import ViewTravelStroy from '../../components/ViewTravelStroy';
 import EmptyCard from '../../components/EmptyCard';
+import { DayPicker } from 'react-day-picker';
 
 Modal.setAppElement("#root");
 
@@ -20,6 +21,7 @@ const Home = () => {
   const [allStories, setAllStories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState('')
+  const [dateRange, setDateRange] = useState({ form: null, to: null })
 
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
@@ -123,6 +125,14 @@ const Home = () => {
     setFilterType('');
     getAllTravelStories();
   }
+
+  const filterTravelStoriesByDate = async (day) => {
+
+  }
+  const handleDayClick = () => {
+    setDateRange("");
+    filterTravelStoriesByDate();
+  }
   useEffect(() => {
     getUserInfo();
     getAllTravelStories();
@@ -161,7 +171,17 @@ const Home = () => {
             )}
           </div>
           <div className='w-[320px]'>
-            
+            <div className='bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg'>
+              <div className='p-3'>
+                <DayPicker
+                  captionLayout='dropdown-buttons'
+                  mode='range'
+                  selected={dateRange}
+                  onSelect={handleDayClick}
+                  pagedNavigation
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
