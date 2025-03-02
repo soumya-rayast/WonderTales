@@ -11,6 +11,7 @@ import AddEditTravelStory from '../../components/AddEditTravelStory';
 import ViewTravelStroy from '../../components/ViewTravelStroy';
 import EmptyCard from '../../components/EmptyCard';
 import { DayPicker } from 'react-day-picker';
+import moment from 'moment';
 
 Modal.setAppElement("#root");
 
@@ -127,11 +128,26 @@ const Home = () => {
   }
 
   const filterTravelStoriesByDate = async (day) => {
+    try {
+      const startDate = day.from ? moment(day.from).valueOf() : null;
+      const endDate = day.to ? moment(day.to).valueOf() : null;
 
+      if (startDate && endDate) {
+        const response = await axiosInstance.get('/travel-stories/filter', {
+          params: { startDate, endDate },
+        })
+        if (response.data && response.data.stories) {
+          setFilterType('date');
+          setAllStories(response.data.stories)
+        }
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred. Please try again.", error);
+    }
   }
-  const handleDayClick = () => {
-    setDateRange("");
-    filterTravelStoriesByDate();
+  const handleDayClick = (day) => {
+    setDateRange(day);
+    filterTravelStoriesByDate(day);
   }
   useEffect(() => {
     getUserInfo();
@@ -148,6 +164,8 @@ const Home = () => {
         handleClearSearch={handleClearSearch}
       />
       <div className='container mx-auto py-10'>
+
+        
         <div className='flex gap-7'>
           <div className='flex-1'>
             {allStories.length > 0 ? (
