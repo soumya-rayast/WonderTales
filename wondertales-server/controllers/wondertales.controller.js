@@ -26,7 +26,6 @@ const addStory = async (req, res) => {
         res.status(400).json({ error: true, message: error.message });
     }
 }
-
 // get all story function 
 const getAllStory = async (req, res) => {
     const { userId } = req.user;
@@ -74,7 +73,6 @@ const deleteImage = async (req, res) => {
         res.status(500).json({ error: true, message: error.message });
     }
 };
-
 // function for edit story 
 const editStory = async (req, res) => {
     const { id } = req.params;
@@ -104,7 +102,6 @@ const editStory = async (req, res) => {
         res.status(500).json({ error: true, message: error.message })
     }
 }
-
 // function for delete story 
 const deleteStory = async (req, res) => {
     const { id } = req.params;
@@ -133,7 +130,6 @@ const deleteStory = async (req, res) => {
         res.status(500).json({ error: true, message: error.message })
     }
 }
-
 // function for favourite
 const isFavourite = async (req, res) => {
     const { id } = req.params;
@@ -152,7 +148,6 @@ const isFavourite = async (req, res) => {
         res.status(500).json({ error: true, message: error.message })
     }
 }
-
 // function for search story
 const searchStory = async (req, res) => {
     const { query } = req.query;
@@ -176,7 +171,6 @@ const searchStory = async (req, res) => {
         res.status(500).json({ error: true, message: error.message })
     }
 }
-
 // function for filter story by data
 const filterStory = async (req, res) => {
     const { startDate, endDate } = req.query;

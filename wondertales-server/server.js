@@ -8,7 +8,6 @@ const path = require("path");
 const userRoutes = require('./routes/auth.Routes.js')
 const storiesRoutes = require('./routes/story.Routes.js');
 
-
 const app = express();
 
 // Middleware
@@ -46,6 +45,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: true, message: "Internal Server Error" });
 });
 
+// PORT Configuration
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

@@ -23,7 +23,7 @@ router.post("/add", authenticationToken, addStory);
 router.get("/get-all-stories", authenticationToken, getAllStory);
 
 // Edit an existing story
-router.put("/edit/:id", authenticationToken, editStory);
+router.put("/edit-story/:id", authenticationToken, editStory);
 
 // Delete a story
 router.delete("/delete-story/:id", authenticationToken, deleteStory);
@@ -41,6 +41,6 @@ router.put("/update-is-favourite/:id", authenticationToken, isFavourite);
 router.get("/search", searchStory);
 
 // filter by date 
-router.get('/filter', filterStory);
+router.get('/filter',authenticationToken, filterStory);
 
 module.exports = router; 

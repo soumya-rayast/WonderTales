@@ -8,7 +8,7 @@ function App() {
     <div>
       <Router >
         <Routes >
-          {/* <Route path='/' element={<Root />} /> */}
+          <Route path='/' element={<Root />} />
           <Route path='/dashboard' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route path='/Signup' element={<SignUp />} />
@@ -18,13 +18,13 @@ function App() {
   )
 }
 
-// const Root = () => {
-//   const isAuthenticated = !!localStorage.getItem('token');
+const Root = () => {
+  const isAuthenticated = !!localStorage.getItem('token');
 
-//   return isAuthenticated ? (
-//     <Navigate to="/dashboard" />
-//   ) : (
-//     <Navigate to={"/login"} />
-//   )
-// }
+  return isAuthenticated ? (
+    <Navigate to="/dashboard" />
+  ) : (
+    <Navigate to={"/login"} />
+  )
+}
 export default App

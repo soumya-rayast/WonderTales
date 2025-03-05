@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordInput from '../../components/PasswordInput';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
 
 const Login = () => {
-
-  const navigate = useNavigate('');
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -14,97 +13,66 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateEmail(email)) {
-      setError("please enter a valid email address.")
+      setError("Please enter a valid email address.");
+      return;
     }
     if (!password) {
       setError("Please enter the password");
       return;
     }
-    setError();
-    // Login api call 
+    setError(null);
+
     try {
       const response = await axiosInstance.post("/api/users/login", {
-        email: email,
-        password: password,
-      })
-      if (response.data && response.data.accessToken) {
+        email,
+        password,
+      });
+      if (response.data?.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         navigate('/dashboard');
       }
     } catch (error) {
-      if (
-        error.message &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setError(error.response.data.message);
-      } else {
-        setError("An unexpected error occurred. Please try again");
-      }
+      setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
     }
-  }
+  };
+
   return (
-    <div className='h-screen bg-cyan-50 overflow-hidden relative'>
+    <div className="h-screen flex items-center justify-center bg-cyan-50">
+      <div className="w-96 bg-white p-8 rounded-lg shadow-lg">
+        <h4 className="text-2xl font-semibold text-center mb-6">Login</h4>
 
-      <div className='login-ui-box right-10 -top-40' />
-      <div className='login-ui-box bg-cyan-200 -bottom-40 ring-1/2' />
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-box mb-4 w-full"
+          />
 
-      <div className='container h-screen flex items-center justify-center px-20 mx-auto'>
+          <PasswordInput
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mb-4 w-full"
+          />
 
-        <div className='w-2/4 h-[90vh] flex items-end bg-login-bg-img bg-cover bg-center rounded-lg p-10 z-10'>
-          <div>
-            <h4 className='text-5xl text-white font-semibold leading-[58px]'>Capture Your<br />Journeys</h4>
-            <p className='text-[15px] text-white leading-6 pr-7 mt-4'>
-              Record your travel experiences and memories in your personal travel journal.
-            </p>
-          </div>
-        </div>
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-        <div className='w-2/4 h-[75vh] bg-white rounded-r-lg relative p-16 shadow-lg shadow-cyan-200/20'>
+          <button type="submit" className="btn-primary w-full mt-4">LOGIN</button>
 
-          <form onSubmit={handleLogin}>
-            <h4 className='text-2xl font-semibold mb-7'>
-              Login
-            </h4>
+          <p className="text-xs text-center text-slate-500 my-4">Or</p>
 
-            <input
-              type="text"
-              placeholder='Email'
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
-              className='input-box' />
-
-            <PasswordInput
-              value={password}
-              onChange={({ target }) => { setPassword(target.value) }}
-            />
-
-            {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
-
-            <button
-              className='btn-primary'
-              type='submit'>
-              LOGIN
-            </button>
-
-            <p
-              className='text-xs text-slate-500 text-center my-4'>
-              Or
-            </p>
-
-            <button
-              className='btn-primary btn-light'
-              onClick={() => navigate('/signup')}>
-              Create Account
-            </button>
-
-          </form>
-        </div>
-
+          <button
+            type="button"
+            className="btn-primary btn-light w-full"
+            onClick={() => navigate('/signup')}
+          >
+            Create Account
+          </button>
+        </form>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

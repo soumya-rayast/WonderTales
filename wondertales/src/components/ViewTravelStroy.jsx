@@ -24,29 +24,29 @@ const ViewTravelStroy = ({ storyInfo, onClose, onEditClick, onDeleteClick }) => 
             <div>
                 <div className='flex-1 flex flex-col gap-2 py-4'>
                     <h1 className='text-2xl text-slate-950'>
-                        {storyInfo && storyInfo.title}
+                        {storyInfo?.title || "No Title"}
                     </h1>
                     <div>
                         <div className='flex items-center justify-between gap-3'>
                             <span className='text-xs text-slate-950'>
                                 {storyInfo && moment(storyInfo.visitedDate).format("Do MMM YYYY")}
                             </span>
-                            <div className='inline-flex items-center gap-2 text-[13px] text-cyan-200/40 rounded px-2 py-1'>
-                                <GrMapLocation className='text-sm' />
-                                {storyInfo &&
-                                    storyInfo.visitedLocation.map((item, index) => storyInfo.visitedLocation.length == index + 1 ? `${item}` : `${item},`)}
-                            </div>
-
+                            {storyInfo?.visitedLocation?.length > 0 && (
+                                <div className='inline-flex items-center gap-2 text-[13px] text-cyan-200/40 rounded px-2 py-1'>
+                                    <GrMapLocation className='text-sm' />
+                                    {storyInfo.visitedLocation.join(", ")}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <img
-                        src={storyInfo && storyInfo.imageUrl}
-                        alt="Selected"
+                        src={storyInfo && storyInfo?.imageUrl}
+                        alt="Story"
                         className='w-full h-[300px] object-cover rounded-lg'
                     />
                     <div className='mt-4'>
                         <p className='text-sm text-slate-950 leading-6 text-justify whitespace-pre-line'>
-                            {storyInfo.story}
+                            {storyInfo?.story}
                         </p>
                     </div>
                 </div>

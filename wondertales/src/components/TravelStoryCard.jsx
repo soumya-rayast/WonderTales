@@ -48,9 +48,7 @@ const TravelStoryCard = ({
             className='text-sm'
           />
           {
-            visitedLocation.map((item, index) =>
-              visitedLocation.length == index + 1 ? `${item}` : `${item}`
-            )
+            visitedLocation.length > 0 ? visitedLocation.join(",") : "Unknown Location"
           }
         </div>
       </div>

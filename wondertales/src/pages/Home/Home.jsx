@@ -25,18 +25,19 @@ const Home = () => {
   const [filterType, setFilterType] = useState('')
   const [dateRange, setDateRange] = useState({ form: null, to: null })
 
+
+  // useState for open edit modal 
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: 'add',
     data: null
   });
-
+  // useState for open view modal
   const [openViewModal, setOpenViewModal] = useState({
     isShown: false,
     type: 'add',
     data: null
   });
-
   // function to fetch user info
   const getUserInfo = useCallback(async () => {
     try {
@@ -51,7 +52,6 @@ const Home = () => {
       }
     }
   }, [navigate]);
-
   // Function to fetch all travel stories
   const getAllTravelStories = async () => {
     try {
@@ -60,10 +60,9 @@ const Home = () => {
         setAllStories(data.stories);
       }
     } catch (error) {
-      console.error("An unexpected error occurred. Please try again.");
+      console.error("An unexpected error occurred. Please try again.", error);
     }
   };
-
   // Function to update favourite status
   const updateIsFavourite = async (storyData) => {
     try {
@@ -85,21 +84,21 @@ const Home = () => {
       console.error("An unexpected error occurred. Please try again.", error);
     }
   };
-
+  // function for close moa=dal
   const handleCloseModal = () => {
     setOpenAddEditModal({ isShown: false, type: "add", data: null });
   };
-
+  // function for view story
   const handleViewStory = (data) => {
     setOpenViewModal({ isShown: true, data })
   }
+  // function for delete 
   const handleDelete = (data) => {
     setOpenAddEditModal({ isShown: true, type: "edit", data: data })
   }
-
+  // function for delete story
   const deleteTravelStory = async (data) => {
     const storyId = data._id;
-
     try {
       const response = await axiosInstance.delete("/api/stories/delete-story/" + storyId);
       if (response.data && !response.data.error) {
@@ -111,8 +110,7 @@ const Home = () => {
       console.error("An unexpected error occurred. Please try again.", error);
     }
   }
-
-
+  //function for search story 
   const onSearchStory = async (query) => {
     try {
       const response = await axiosInstance.get("/api/stories/search", {
@@ -129,12 +127,12 @@ const Home = () => {
       console.error("An unexpected error occurred. Please try again.", error);
     }
   }
-
+  // function for clear search
   const handleClearSearch = () => {
     setFilterType('');
     getAllTravelStories();
   }
-
+  //function for filter story
   const filterTravelStoriesByDate = async (day) => {
     try {
       const startDate = day.from ? moment(day.from).valueOf() : null;
@@ -153,15 +151,18 @@ const Home = () => {
       console.error("An unexpected error occurred. Please try again.", error);
     }
   }
+  // function for selecting range
   const handleDayClick = (day) => {
     setDateRange(day);
     filterTravelStoriesByDate(day);
   }
+  //function for reset filter
   const resetFilter = () => {
     setDateRange({ from: null, to: null });
     setFilterType('');
     getAllTravelStories();
   }
+
   useEffect(() => {
     getUserInfo();
     getAllTravelStories();
@@ -173,11 +174,10 @@ const Home = () => {
         userInfo={userInfo}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        handleSearch={onSearchStory}
+        onSearchNote={onSearchStory}
         handleClearSearch={handleClearSearch}
       />
       <div className='container mx-auto py-10'>
-
         <FilterInfoTitle
           filterType={filterType}
           filterDates={dateRange}
@@ -205,7 +205,7 @@ const Home = () => {
               </div>
             ) : (
               <EmptyCard
-                message={getEmptyCardMessage(filterType)}
+                message={getEmptyCardMessage(filterType || "default")}
               />
             )}
           </div>
@@ -226,24 +226,25 @@ const Home = () => {
       </div>
 
       {/* Add/Edit Story Modal */}
-      <Modal
-        isOpen={openAddEditModal.isShown}
-        onRequestClose={handleCloseModal}
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0.2)",
-            zIndex: 999
-          }
-        }}
-        className='model-box'
-      >
-        <AddEditTravelStory
-          type={openAddEditModal.type}
-          storyInfo={openAddEditModal.data}
-          getAllTravelStories={getAllTravelStories}
-          onClose={handleCloseModal}
-        />
-      </Modal>
+      {openAddEditModal.isShown && (
+        <Modal
+          isOpen={openAddEditModal.isShown}
+          onRequestClose={handleCloseModal}
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,0.2)",
+              zIndex: 999,
+            }
+          }}
+        >
+          <AddEditTravelStory
+            type={openAddEditModal.type}
+            storyInfo={openAddEditModal.data}
+            getAllTravelStories={getAllTravelStories}
+            onClose={handleCloseModal}
+          />
+        </Modal>
+      )}
 
       <Modal
         isOpen={openViewModal.isShown}
@@ -262,7 +263,7 @@ const Home = () => {
           onClose={() => setOpenViewModal((prevState) => ({ ...prevState, isShown: false }))}
           onEditClick={() => {
             setOpenViewModal((prevState) => ({ ...prevState, isShown: false })),
-              handleDelete(openViewModal.data || null)
+              handleDelete(openViewModal.data || null);
           }}
           onDeleteClick={() => {
             deleteTravelStory(openViewModal.data || null)
@@ -277,7 +278,6 @@ const Home = () => {
       >
         <MdAdd className="text-[32px] text-white" />
       </button>
-
       <ToastContainer />
     </div>
   );
