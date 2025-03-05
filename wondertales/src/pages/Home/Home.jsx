@@ -19,7 +19,6 @@ Modal.setAppElement("#root");
 
 const Home = () => {
   const navigate = useNavigate();
-
   const [userInfo, setUserInfo] = useState(null);
   const [allStories, setAllStories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,10 +36,11 @@ const Home = () => {
     type: 'add',
     data: null
   });
-  // Function to fetch user info
+
+  // function to fetch user info
   const getUserInfo = useCallback(async () => {
     try {
-      const { data } = await axiosInstance.get("get-user");
+      const { data } = await axiosInstance.get("/api/users/get-user");
       if (data?.user) {
         setUserInfo(data.user);
       }
@@ -55,7 +55,7 @@ const Home = () => {
   // Function to fetch all travel stories
   const getAllTravelStories = async () => {
     try {
-      const { data } = await axiosInstance.get("/get-all-stories");
+      const { data } = await axiosInstance.get("/api/stories/get-all-stories");
       if (data?.stories) {
         setAllStories(data.stories);
       }
@@ -67,7 +67,7 @@ const Home = () => {
   // Function to update favourite status
   const updateIsFavourite = async (storyData) => {
     try {
-      const response = await axiosInstance.put(`/update-is-favourite/${storyData._id}`, {
+      const response = await axiosInstance.put(`/api/stories/update-is-favourite/${storyData._id}`, {
         isFavourite: !storyData.isFavourite
       });
 
@@ -101,7 +101,7 @@ const Home = () => {
     const storyId = data._id;
 
     try {
-      const response = await axiosInstance.delete("/delete-story" + storyId);
+      const response = await axiosInstance.delete("/api/stories/delete-story/" + storyId);
       if (response.data && !response.data.error) {
         toast.error("Story Deleted Successfully");
         setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
@@ -115,7 +115,7 @@ const Home = () => {
 
   const onSearchStory = async (query) => {
     try {
-      const response = await axiosInstance.get("/search", {
+      const response = await axiosInstance.get("/api/stories/search", {
         params: {
           query,
         }
@@ -141,7 +141,7 @@ const Home = () => {
       const endDate = day.to ? moment(day.to).valueOf() : null;
 
       if (startDate && endDate) {
-        const response = await axiosInstance.get('/travel-stories/filter', {
+        const response = await axiosInstance.get('/api/stories/filter', {
           params: { startDate, endDate },
         })
         if (response.data && response.data.stories) {

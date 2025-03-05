@@ -11,7 +11,6 @@ const TagInput = ({ tags, setTags }) => {
             setInputValue("")
         }
     };
-
     const handleInputChange = (e) => {
         setInputValue(e.target.value)
     };

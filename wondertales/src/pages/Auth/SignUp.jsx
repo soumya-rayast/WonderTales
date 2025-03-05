@@ -30,7 +30,7 @@ const SignUp = () => {
     setError();
     // signup api call 
     try {
-      const response = await axiosInstance.post("/signup", {
+      const response = await axiosInstance.post("/api/users/signup", {
         email: email,
         password: password,
       })
@@ -51,7 +51,7 @@ const SignUp = () => {
       } else {
         setError("An unexpected error occurred. Please try again");
       }
-      
+
     }
   }
   return (

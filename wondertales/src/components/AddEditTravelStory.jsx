@@ -28,7 +28,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                 imageUrl = imgUploads.imageUrl || "";
             }
 
-            const response = await axiosInstance.post("/add-travel-story", {
+            const response = await axiosInstance.post("/api/stories/add", {
                 title,
                 story,
                 imageUrl: imageUrl || "",
@@ -45,7 +45,6 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
             setError(extractErrorMessage(error));
         }
     }
-
     const updateTravelStory = async () => {
         const storyId = storyInfo._id;
         try {
@@ -67,7 +66,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                 }
             }
 
-            const response = await axiosInstance.put("/edit-story/" + storyId, post);
+            const response = await axiosInstance.put("/api/stories/edit-story/" + storyId, post);
 
             if (response.data && response.data.story) {
                 toast.success("story edited successfully");
@@ -82,7 +81,6 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
             }
         }
     }
-
     const handleAddOrUpdateClick = () => {
         if (!title) {
             setError("please enter the title");
@@ -100,10 +98,8 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
             addNewTravelStory();
         }
     };
-
-
     const handleDeleteStoryImg = async () => {
-        const deleteImagesRes = await axiosInstance.delete('/delete-image', {
+        const deleteImagesRes = await axiosInstance.delete('/api/stories/delete-image', {
             params: {
                 imageUrl: storyInfo.imageUrl,
             }
@@ -124,8 +120,6 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
             setStoryImg(null);
         }
     };
-
-
     return (
         <div className='relative'>
             <div className='flex items-center justify-between'>

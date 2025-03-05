@@ -20,13 +20,13 @@ const router = express.Router();
 router.post("/add", authenticationToken, addStory);
 
 // Get all stories of a user
-router.get("/stories", authenticationToken, getAllStory);
+router.get("/get-all-stories", authenticationToken, getAllStory);
 
 // Edit an existing story
 router.put("/edit/:id", authenticationToken, editStory);
 
 // Delete a story
-router.delete("/delete/:id", authenticationToken, deleteStory);
+router.delete("/delete-story/:id", authenticationToken, deleteStory);
 
 // Upload an image (added authentication protection)
 router.post("/upload", authenticationToken, upload.single("image"), uploadImage);
@@ -41,6 +41,6 @@ router.put("/update-is-favourite/:id", authenticationToken, isFavourite);
 router.get("/search", searchStory);
 
 // filter by date 
-router.get('/filter',filterStory);
+router.get('/filter', filterStory);
 
-module.exports = router;
+module.exports = router; 

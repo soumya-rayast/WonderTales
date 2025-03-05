@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { FaRegFile } from 'react-icons/fa'
 import { MdDeleteOutline } from 'react-icons/md'
-const ImageSelector = ({ image, setImage , handleDeleteImg}) => {
+const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
   const inputRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 

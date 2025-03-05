@@ -4,6 +4,11 @@ const cors = require('cors');
 const connectDB = require("./config/db");
 const path = require("path");
 
+//routes folder 
+const userRoutes = require('./routes/auth.Routes.js')
+const storiesRoutes = require('./routes/story.Routes.js');
+
+
 const app = express();
 
 // Middleware
@@ -25,6 +30,10 @@ connectDB().catch(err => {
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/assets", express.static(path.join(__dirname, "assets")));
+
+//Routes
+app.use('/api/users',userRoutes);
+app.use('/api/stories',storiesRoutes);
 
 // Health check route
 app.get("/", (req, res) => {

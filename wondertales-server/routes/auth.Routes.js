@@ -11,6 +11,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 
 // Get user profile (protected route)
-router.get("/me", authenticationToken, getUser);
+router.get("/get-user", authenticationToken, getUser);
 
 module.exports = router;
