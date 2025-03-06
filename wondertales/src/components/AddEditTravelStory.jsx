@@ -22,7 +22,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
         return error.response?.data?.message || "An error occurred. Please try again.";
     };
     // function for add new travel story 
-    const addNewTravelStory = async () => {
+    const addNewTravelStory = async (storyData, storyImg) => {
         try {
             let imageUrl = "";
             if (storyImg) {
@@ -30,10 +30,10 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                 imageUrl = imgUploads.imageUrl || "";
             }
             const response = await axiosInstance.post("/api/stories/add", {
-                title,
-                story,
+                title: storyData.title,
+                story: storyData.story,
                 imageUrl: imageUrl || "",
-                visitedLocation,
+                visitedLocation: storyData.visitedLocation,
                 visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
             });
 
@@ -81,43 +81,53 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
     // function for handle add or update click 
     const handleAddOrUpdateClick = () => {
         if (!title) {
-            setError("please enter the title");
+            setError("Please enter the title");
             return;
         }
         if (!story) {
-            setError("Please enter the story")
+            setError("Please enter the story");
             return;
         }
-        setError("")
+        setError("");
+    
+        const formattedVisitedLocation = Array.isArray(visitedLocation) ? visitedLocation.join(", ") : visitedLocation;
+    
+        const storyData = { 
+            title, 
+            story, 
+            visitedLocation: formattedVisitedLocation  
+        };
+    
+        console.log("Sending Data:", storyData);
+    
         if (type === "edit") {
             updateTravelStory();
         } else {
-            addNewTravelStory();
+            addNewTravelStory(storyData, storyImg);
         }
     };
+    
     // function for delete story image
     const handleDeleteStoryImg = async () => {
-        const deleteImagesRes = await axiosInstance.delete('/api/stories/delete-image', {
-            params: {
-                imageUrl: storyInfo.imageUrl,
+        if (!storyInfo?.imageUrl) {
+            console.warn("No image URL found to delete.");
+            return;
+        }
+
+        try {
+            const deleteImagesRes = await axiosInstance.delete('/api/stories/delete-image', {
+                params: { imageUrl: storyInfo.imageUrl }
+            });
+
+            if (deleteImagesRes.data) {
+                console.log("Image deleted successfully");
+                setStoryImg(null);
             }
-        });
-        if (deleteImagesRes.data) {
-            const storyId = storyInfo._id;
-            const postData = {
-                title,
-                story,
-                visitedLocation,
-                visitedDate: moment().valueOf(),
-                imageUrl: "",
-            }
-            await axiosInstance.put(
-                "/api/stories/edit-story/" + storyId,
-                postData,
-            )
-            setStoryImg(null);
+        } catch (error) {
+            console.error("Error deleting image:", error);
         }
     };
+
     return (
         <div className='relative'>
             <div className='flex items-center justify-between'>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { FaRegFile } from 'react-icons/fa'
 import { MdDeleteOutline } from 'react-icons/md'
+import { toast } from 'react-toastify';
 const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
   const inputRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -8,7 +9,11 @@ const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setImage(file)
+      if (!file.type.startsWith("image/")) {  
+        toast.error("Please upload a valid image file.");
+        return;
+      }
+      setImage(file);
     }
   }
 
@@ -18,10 +23,13 @@ const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
 
   const handleRemoveImage = () => {
     setImage(null);
-    handleDeleteImg();
-  }
+    if (handleDeleteImg) {
+      handleDeleteImg();
+    }
+  };
 
   useEffect(() => {
+    let objectUrl = null;
     if (typeof image === "string") {
       setPreviewUrl(image);
     } else if (image) {
@@ -30,8 +38,8 @@ const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
       setPreviewUrl(null);
     }
     return () => {
-      if (previewUrl && typeof previewUrl === 'string' && !image) {
-        URL.revokeObjectURL(previewUrl);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     }
   }, [image]);
@@ -45,32 +53,30 @@ const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
         onChange={handleImageChange}
         className='hidden'
       />
-      {image ? <button
-        className='w-full flex flex-col items-center justify-center gap-4 bg-slate-50 rounded border border-slate-200/50'
-        onClick={() => onChooseFile()}>
-        <div
-          className='flex w-14 h-14 items-center justify-center bg-cyan-50 rounded-full border-cyan-100'>
-          <FaRegFile
-            className='text-xl text-cyan-500' />
-        </div>
-        <p
-          className='text-sm text-slate-500'>
-          Browse image files to upload
-        </p>
-      </button> :
+      {!image ? (
+        <button
+          className='w-full flex flex-col items-center justify-center gap-4 bg-slate-50 rounded border border-slate-200/50'
+          onClick={onChooseFile}>
+          <div className='flex w-14 h-14 items-center justify-center bg-cyan-50 rounded-full border-cyan-100'>
+            <FaRegFile className='text-xl text-cyan-500' />
+          </div>
+          <p className='text-sm text-slate-500'>Browse image files to upload</p>
+        </button>
+      ) : (
         <div className='w-full relative'>
           <img
             src={previewUrl}
             alt="Selected"
-            className='w-full h-[300px] object-cover rounded-lg' />
-
+            className='w-full h-[300px] object-cover rounded-lg'
+          />
           <button
             onClick={handleRemoveImage}
             className='btn-small btn-delete absolute top-2 right-2'>
             <MdDeleteOutline className='text-lg' />
           </button>
         </div>
-      }
+      )}
+
     </div>
   )
 }

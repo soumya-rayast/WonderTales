@@ -29,7 +29,7 @@ router.put("/edit-story/:id", authenticationToken, editStory);
 router.delete("/delete-story/:id", authenticationToken, deleteStory);
 
 // Upload an image (added authentication protection)
-router.post("/upload", authenticationToken, upload.single("image"), uploadImage);
+router.post("/image-upload", authenticationToken, upload.single("image"), uploadImage);
 
 // Delete an uploaded image
 router.delete("/delete-image", authenticationToken, deleteImage);

@@ -19,7 +19,7 @@ Modal.setAppElement("#root");
 
 const Home = () => {
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState('');
   const [allStories, setAllStories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState('')
@@ -35,7 +35,6 @@ const Home = () => {
   // useState for open view modal
   const [openViewModal, setOpenViewModal] = useState({
     isShown: false,
-    type: 'add',
     data: null
   });
   // function to fetch user info
@@ -55,7 +54,7 @@ const Home = () => {
   // Function to fetch all travel stories
   const getAllTravelStories = async () => {
     try {
-      const { data } = await axiosInstance.get("/api/stories/get-all-stories");
+      const { data } = await axiosInstance.get("/api/stories/get-all-stories", { timeout: 30000 });
       if (data?.stories) {
         setAllStories(data.stories);
       }
@@ -87,13 +86,15 @@ const Home = () => {
   // function for close moa=dal
   const handleCloseModal = () => {
     setOpenAddEditModal({ isShown: false, type: "add", data: null });
+    setOpenViewModal({ isShown: false, data: null });
   };
   // function for view story
   const handleViewStory = (data) => {
+    setOpenAddEditModal({ isShown: false, type: "add", data: null });
     setOpenViewModal({ isShown: true, data })
   }
-  // function for delete 
-  const handleDelete = (data) => {
+  const handleEditStory = (data) => {
+    setOpenViewModal({ isShown: false, data: null });
     setOpenAddEditModal({ isShown: true, type: "edit", data: data })
   }
   // function for delete story
@@ -226,49 +227,35 @@ const Home = () => {
       </div>
 
       {/* Add/Edit Story Modal */}
-      {openAddEditModal.isShown && (
-        <Modal
-          isOpen={openAddEditModal.isShown}
-          onRequestClose={handleCloseModal}
-          style={{
-            overlay: {
-              backgroundColor: "rgba(0,0,0,0.2)",
-              zIndex: 999,
-            }
-          }}
-        >
-          <AddEditTravelStory
-            type={openAddEditModal.type}
-            storyInfo={openAddEditModal.data}
-            getAllTravelStories={getAllTravelStories}
-            onClose={handleCloseModal}
-          />
-        </Modal>
-      )}
 
       <Modal
-        isOpen={openViewModal.isShown}
-        onRequestClose={() => { }}
+        key={openAddEditModal.isShown ? "add-edit-modal" : "view-modal"}
+        isOpen={openAddEditModal.isShown || openViewModal.isShown}
+        onRequestClose={handleCloseModal}
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.2)",
             zIndex: 999,
           }
         }}
-        appElement={document.getElementById("root")}
-        className="model-box"
       >
-        <ViewTravelStroy
-          storyInfo={openViewModal.data || null}
-          onClose={() => setOpenViewModal((prevState) => ({ ...prevState, isShown: false }))}
-          onEditClick={() => {
-            setOpenViewModal((prevState) => ({ ...prevState, isShown: false })),
-              handleDelete(openViewModal.data || null);
-          }}
-          onDeleteClick={() => {
-            deleteTravelStory(openViewModal.data || null)
-          }}
-        />
+        {openAddEditModal.isShown ? (
+          <AddEditTravelStory
+            type={openAddEditModal.type}
+            storyInfo={openAddEditModal.data}
+            getAllTravelStories={getAllTravelStories}
+            onClose={handleCloseModal}
+          />
+        ) : (
+          <ViewTravelStroy
+            storyInfo={openViewModal.data}
+            onClose={handleCloseModal}
+            onEditClick={() => {
+              handleEditStory(openViewModal.data);
+            }}
+            onDeleteClick={() => deleteTravelStory(openViewModal.data)}
+          />
+        )}
       </Modal>
 
       {/* Add Story Button */}
