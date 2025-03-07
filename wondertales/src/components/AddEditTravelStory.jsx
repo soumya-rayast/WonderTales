@@ -34,7 +34,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
                 story: storyData.story,
                 imageUrl: imageUrl || "",
                 visitedLocation: storyData.visitedLocation,
-                visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
+                visitedDate: storyData.visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
             });
 
             if (response.data && response.data.story) {

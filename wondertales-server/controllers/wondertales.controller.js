@@ -3,9 +3,10 @@ const path = require("path");
 const fs = require("fs");
 // Function for add story 
 const addStory = async (req, res) => {
-    const { title, story, visitedLocation, imageUrl, visitedDate, userId } = req.body;
+    console.log("Request Body:", req.body); 
+    const { title, story, visitedLocation, imageUrl, visitedDate} = req.body;
 
-    if (!title || !story || !visitedLocation || !imageUrl || !visitedDate || !userId) {
+    if (!title || !story || !visitedLocation || !imageUrl || !visitedDate) {
         return res.status(400).json({ error: true, message: "All fields are required" });
     }
 
@@ -31,7 +32,6 @@ const addStory = async (req, res) => {
         res.status(400).json({ error: true, message: error.message });
     }
 };
-
 // get all story function 
 const getAllStory = async (req, res) => {
     const { userId } = req.query;
@@ -184,10 +184,10 @@ const searchStory = async (req, res) => {
 }
 // function for filter story by data
 const filterStory = async (req, res) => {
+    const { startDate, endDate } = req.query;
     if (!startDate || !endDate) {
         return res.status(400).json({ error: true, message: "Both startDate and endDate are required" });
     }
-    const { startDate, endDate } = req.query;
     const { userId } = req.user;
 
     try {
@@ -205,7 +205,7 @@ const filterStory = async (req, res) => {
         res.status(500).json({ error: true, message: error.message })
     }
 }
-
+ 
 module.exports = {
     addStory,
     getAllStory,
@@ -216,4 +216,4 @@ module.exports = {
     deleteImage,
     deleteStory,
     editStory
-};
+}; 

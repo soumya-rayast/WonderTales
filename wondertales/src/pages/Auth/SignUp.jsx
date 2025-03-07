@@ -10,25 +10,18 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
-    if (!name) {
-      setError("Please enter your name.");
-      return;
-    }
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Please enter the password.");
-      return;
-    }
-
     setError(null);
-    
+
+    if (!name) return setError("Please enter your name.");
+    if (!validateEmail(email)) return setError("Please enter a valid email address.");
+    if (!password || password.length < 6) return setError("Password must be at least 6 characters.");
+
+    setLoading(true); 
+
     try {
       const response = await axiosInstance.post("/api/users/signup", {
         email,
@@ -42,43 +35,71 @@ const SignUp = () => {
       }
     } catch (error) {
       setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false); 
     }
   };
 
-  return (
-    <div className="h-screen flex items-center justify-center bg-cyan-50">
-      <div className="w-96 bg-white p-8 rounded-lg shadow-lg">
-        <h4 className="text-2xl font-semibold text-center mb-6">Sign Up</h4>
 
-        <form onSubmit={handleSignup}>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-cyan-50 dark:bg-gray-900 px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+        
+        {/* Title */}
+        <h4 className="text-2xl font-semibold text-center mb-6 text-gray-900 dark:text-white">Sign Up</h4>
+
+        {/* Form */}
+        <form onSubmit={handleSignup} className="space-y-4">
+          
+          {/* Full Name */}
           <input
             type="text"
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input-box mb-4 w-full"
+            className="input-box w-full dark:bg-gray-700 dark:text-white"
+            required
+            autoFocus
           />
 
+          {/* Email */}
           <input
-            type="text"
+            type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input-box mb-4 w-full"
+            className="input-box w-full dark:bg-gray-700 dark:text-white"
+            required
           />
 
+          {/* Password */}
           <PasswordInput
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mb-4 w-full"
+            className="w-full dark:bg-gray-700 dark:text-white"
+            required
           />
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {/* Error Message */}
+          {error && (
+            <p className="text-red-500 text-sm text-center bg-red-100 p-2 rounded-lg">
+              {error}
+            </p>
+          )}
 
-          <button type="submit" className="btn-primary w-full mt-4">CREATE ACCOUNT</button>
+          {/* Signup Button */}
+          <button 
+            type="submit" 
+            className={`btn-primary w-full mt-2 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={loading} 
+          >
+            {loading ? "Signing Up..." : "CREATE ACCOUNT"}
+          </button>
 
-          <p className="text-xs text-center text-slate-500 my-4">Or</p>
+          {/* Divider */}
+          <p className="text-xs text-center text-slate-500 dark:text-gray-400 my-4">Or</p>
 
+          {/* Login Button */}
           <button
             type="button"
             className="btn-primary btn-light w-full"

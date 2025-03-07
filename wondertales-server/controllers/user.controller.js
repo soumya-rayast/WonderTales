@@ -54,7 +54,6 @@ const signup = async (req, res) => {
         return res.status(500).json({ error: true, message: "Internal Server Error" });
     }
 };
-
 // User login function
 const login = async (req, res) => {
     try {
@@ -102,7 +101,6 @@ const login = async (req, res) => {
         return res.status(500).json({ error: true, message: "Internal Server Error" });
     }
 };
-
 // Get user function
 const getUser = async (req, res) => {
     try {
@@ -124,7 +122,6 @@ const getUser = async (req, res) => {
         return res.status(500).json({ error: true, message: "Internal Server Error" });
     }
 };
-
 module.exports = {
     signup,
     login,

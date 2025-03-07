@@ -135,6 +135,7 @@ const Home = () => {
   }
   //function for filter story
   const filterTravelStoriesByDate = async (day) => {
+    if (!day?.from || !day?.to) return;
     try {
       const startDate = day.from ? moment(day.from).valueOf() : null;
       const endDate = day.to ? moment(day.to).valueOf() : null;
@@ -170,7 +171,8 @@ const Home = () => {
   }, [getUserInfo, getAllTravelStories]);
 
   return (
-    <div>
+    <div className="bg-gray-100 min-h-screen dark:bg-gray-900 transition-colors">
+      {/* Navbar */}
       <Navbar
         userInfo={userInfo}
         searchQuery={searchQuery}
@@ -178,18 +180,20 @@ const Home = () => {
         onSearchNote={onSearchStory}
         handleClearSearch={handleClearSearch}
       />
-      <div className='container mx-auto py-10'>
+
+      {/* Main Content */}
+      <div className="container mx-auto py-10 px-5">
         <FilterInfoTitle
           filterType={filterType}
           filterDates={dateRange}
-          onClear={() => {
-            resetFilter()
-          }}
+          onClear={resetFilter}
         />
-        <div className='flex gap-7'>
-          <div className='flex-1'>
+
+        <div className="flex flex-col md:flex-row gap-10">
+          {/* Stories List */}
+          <div className="flex-1">
             {allStories.length > 0 ? (
-              <div className='grid grid-cols-2 gap-4'>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
                 {allStories.map((item) => (
                   <TravelStoryCard
                     key={item._id}
@@ -205,20 +209,21 @@ const Home = () => {
                 ))}
               </div>
             ) : (
-              <EmptyCard
-                message={getEmptyCardMessage(filterType || "default")}
-              />
+              <EmptyCard message={getEmptyCardMessage(filterType || "default")} />
             )}
           </div>
-          <div className='w-[320px]'>
-            <div className='bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg'>
-              <div className='p-3'>
+
+          {/* Sidebar Calendar Filter */}
+          <div className="w-full md:w-[320px]">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-lg">
+              <div className="p-4">
                 <DayPicker
-                  captionLayout='dropdown-buttons'
-                  mode='range'
+                  captionLayout="dropdown-buttons"
+                  mode="range"
                   selected={dateRange}
                   onSelect={handleDayClick}
                   pagedNavigation
+                  className="text-gray-700 dark:text-gray-300"
                 />
               </div>
             </div>
@@ -226,17 +231,20 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Add/Edit Story Modal */}
-
+      {/* Modals */}
       <Modal
         key={openAddEditModal.isShown ? "add-edit-modal" : "view-modal"}
         isOpen={openAddEditModal.isShown || openViewModal.isShown}
         onRequestClose={handleCloseModal}
         style={{
           overlay: {
-            backgroundColor: "rgba(0,0,0,0.2)",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
             zIndex: 999,
-          }
+          },
+          content: {
+            borderRadius: "10px",      
+            boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
+          },
         }}
       >
         {openAddEditModal.isShown ? (
@@ -250,23 +258,23 @@ const Home = () => {
           <ViewTravelStroy
             storyInfo={openViewModal.data}
             onClose={handleCloseModal}
-            onEditClick={() => {
-              handleEditStory(openViewModal.data);
-            }}
+            onEditClick={() => handleEditStory(openViewModal.data)}
             onDeleteClick={() => deleteTravelStory(openViewModal.data)}
           />
         )}
       </Modal>
 
-      {/* Add Story Button */}
+      {/* Floating Add Button */}
       <button
-        className='w-16 h-16 flex items-center justify-center rounded-full bg-primary hover:bg-cyan-400 fixed right-10 bottom-10 shadow-lg'
+        className="fixed right-8 bottom-8 w-14 h-14 flex items-center justify-center rounded-full bg-cyan-500 hover:bg-cyan-400 shadow-xl transition-all duration-300 transform hover:scale-110"
         onClick={() => setOpenAddEditModal({ isShown: true, type: "add", data: null })}
       >
-        <MdAdd className="text-[32px] text-white" />
+        <MdAdd className="text-3xl text-white" />
       </button>
+
       <ToastContainer />
     </div>
+
   );
 };
 

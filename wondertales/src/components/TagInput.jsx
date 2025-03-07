@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { MdAdd, MdClose } from "react-icons/md";
 import { GrMapLocation } from "react-icons/gr";
 
@@ -6,31 +6,36 @@ const TagInput = ({ tags, setTags }) => {
     const [inputValue, setInputValue] = useState("");
 
     const addNewTag = () => {
-        if (inputValue.trim() !== "") {
-            setTags([...tags, inputValue.trim()]);
-            setInputValue("")
+        const trimmedTag = inputValue.trim();
+        if (trimmedTag !== "" && !tags.includes(trimmedTag)) {
+            setTags([...tags, trimmedTag]);
+            setInputValue("");
         }
     };
+
     const handleInputChange = (e) => {
         setInputValue(e.target.value)
     };
     const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && inputValue.trim() !== "") {
             addNewTag();
         }
-    }
-    const handleRemoveTag = (tagToRemove) => {
-        setTags(tags.filter((tag) => tag !== tagToRemove))
     };
+
+    const handleRemoveTag = useCallback((tagToRemove) => {
+        setTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
+    }, []);
+    
     return (
         <div>
             {tags.length > 0 && (
                 <div className='flex items-center flex-wrap mt-2'>
                     {
                         tags.map((tag, index) => (
-                            <span key={index} className='flex items-center gap-2 text-sm text-cyan-600 bg-cyan-200/40 px-3 rounded'>
+                            <span key={index} className='flex items-center gap-2 text-sm text-cyan-600 bg-cyan-200/40 px-3 py-1 rounded-lg'>
                                 <GrMapLocation className='text-sm' />
-                                <button className='' onClick={() => handleRemoveTag(tag)}>
+                                {tag}
+                                <button onClick={() => handleRemoveTag(tag)} className='text-cyan-600 hover:text-red-500'>
                                     <MdClose />
                                 </button>
                             </span>
@@ -48,7 +53,7 @@ const TagInput = ({ tags, setTags }) => {
                     onKeyDown={handleKeyDown}
                 />
                 <button
-                    className='w-8 h-8 items-center rounded border border-cyan-500 hover:bg-cyan-500'
+                    className='w-8 h-8 flex items-center justify-center rounded border border-cyan-500 hover:bg-cyan-500'
                     onClick={addNewTag}
                 >
                     <MdAdd className="text-2xl text-cyan-500 hover:text-white" />

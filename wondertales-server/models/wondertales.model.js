@@ -10,20 +10,21 @@ const wondertalesSchema = new mongoose.Schema({
         required: true
     },
     visitedLocation: {
-        type: String,
+        type: [String],
         required: true
     },
     isFavourites: {
-        type: String,
+        type: Boolean,
         required: true,
     },
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "User",
         required: true,
     },
     createdOn: {
         type: String,
-        required: true,
+        required: Date.now(),
     },
     imageUrl: {
         type: String,
@@ -33,6 +34,6 @@ const wondertalesSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-}) 
+})
 
 module.exports = mongoose.model("WonderTales", wondertalesSchema);
