@@ -45,9 +45,11 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: true, message: "Internal Server Error" });
 });
 
-// PORT Configuration
-const PORT = process.env.PORT || 5000;
+// // PORT Configuration
+// const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`🚀 Server running `);
+// });
+
+module.exports = app;
